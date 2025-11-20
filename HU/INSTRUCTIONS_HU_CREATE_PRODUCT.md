@@ -4,6 +4,8 @@
 
 > 🔍 Este documento está escrito para ser **consumido y ejecutado por IA**. Cada paso debe interpretarse literalmente. No asumas comportamientos no especificados.
 
+
+
 ---
 
 ## 🧾 Datos del Producto (Estructura Obligatoria)
