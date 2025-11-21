@@ -12,6 +12,7 @@ import { AdminPedidosPage } from './pages/Admin/pedidos';
 import { AdminUsuariosPage } from './pages/Admin/usuarios';
 import { AdminUsuarioDetailPage } from './pages/Admin/usuarios/detail';
 import { AdminProductosPage } from './pages/Admin/productos';
+import NuevoProductoPage from './pages/Admin/productos/NuevoProductoPage';
 import { AdminCategoriasPage } from './pages/Admin/categorias';
 import { AdminCarruselPage } from './pages/Admin/carrusel';
 import { AdminInventarioPage } from './pages/Admin/inventario';
@@ -113,6 +114,16 @@ function App() {
           <ProtectedRoute requireAdmin>
             <AdminLayout>
               <AdminUsuarioDetailPage />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/productos/nuevo"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminLayout>
+              <NuevoProductoPage />
             </AdminLayout>
           </ProtectedRoute>
         }

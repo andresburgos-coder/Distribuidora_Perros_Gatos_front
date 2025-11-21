@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Input, Textarea, Select } from '../../../components/ui/index';
 import productosService from '../../../services/productos-service';
 import useToast from '../../../hooks/use-toast';
@@ -13,7 +13,7 @@ const SUBCATS = {
 const MAX_IMAGE_BYTES = 10485760; // 10 MB
 const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
 
-export const AdminProductosPage = () => {
+export const NuevoProductoPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -31,6 +31,7 @@ export const AdminProductosPage = () => {
 
   useEffect(() => {
     setForm((f) => ({ ...f, subcategoria: SUBCATS[f.categoria][0] }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.categoria]);
 
   const validate = () => {
@@ -67,7 +68,6 @@ export const AdminProductosPage = () => {
       return;
     }
 
-    // Preparar payload: el servicio acepta un objeto y lo transforma en FormData internamente
     const payload = {
       nombre: form.nombre.trim(),
       descripcion: form.descripcion.trim(),
@@ -83,7 +83,6 @@ export const AdminProductosPage = () => {
       toast.success('Producto creado exitosamente');
       navigate('/admin/productos');
     } catch (err) {
-      // Manejo de errores esperado desde backend
       const code = err?.response?.data?.error || err?.response?.status;
       if (code === 'nombre_duplicado' || (err?.response?.status === 409)) {
         toast.error('Ya existe un producto con ese nombre.');
@@ -98,19 +97,97 @@ export const AdminProductosPage = () => {
   };
 
   return (
-    <div className="admin-productos-page">
-      <div className="page-header">
-        <h1 className="page-title">Gestión de Productos</h1>
-        <Link to="/admin/productos/nuevo">
-          <Button variant="primary">Crear Nuevo Producto</Button>
-        </Link>
-      </div>
-      <div className="coming-soon">
-        <p>Funcionalidad en desarrollo</p>
-      </div>
+    <div className="admin-nuevo-producto-page">
+      <h2>Crear Nuevo Producto</h2>
+      <form onSubmit={handleSubmit} className="form-producto" noValidate>
+        <label>
+          Nombre
+          <Input
+            value={form.nombre}
+            onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+            placeholder="Nombre del producto"
+            className={errors.nombre ? 'error' : ''}
+          />
+        </label>
+
+        <label>
+          Descripción
+          <Textarea
+            value={form.descripcion}
+            onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+            placeholder="Descripción (mínimo 10 caracteres)"
+            className={errors.descripcion ? 'error' : ''}
+          />
+        </label>
+
+        <label>
+          Precio
+          <Input
+            type="number"
+            step="0.01"
+            value={form.precio}
+            onChange={(e) => setForm({ ...form, precio: e.target.value })}
+            placeholder="Precio"
+            className={errors.precio ? 'error' : ''}
+          />
+        </label>
+
+        <label>
+          Peso (gramos)
+          <Input
+            type="number"
+            value={form.peso}
+            onChange={(e) => setForm({ ...form, peso: e.target.value })}
+            placeholder="Ingresa el peso en gramos (ej: 500)"
+            className={errors.peso ? 'error' : ''}
+          />
+          <small>Ingresa el peso en gramos (ej: 500 para 500g)</small>
+        </label>
+
+        <label>
+          Categoría
+          <Select
+            value={form.categoria}
+            onChange={(e) => setForm({ ...form, categoria: e.target.value })}
+            className={errors.categoria ? 'error' : ''}
+          >
+            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+          </Select>
+        </label>
+
+        <label>
+          Subcategoría
+          <Select
+            value={form.subcategoria}
+            onChange={(e) => setForm({ ...form, subcategoria: e.target.value })}
+            className={errors.subcategoria ? 'error' : ''}
+          >
+            {SUBCATS[form.categoria].map((s) => <option key={s} value={s}>{s}</option>)}
+          </Select>
+        </label>
+
+        <label>
+          Imagen
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.svg,.webp"
+            onChange={handleChange('imagenFile')}
+            className={errors.imagenFile ? 'error' : ''}
+          />
+          {errors.imagenFile === 'invalid' && (
+            <small className="error-text">
+              Formato o tamaño de imagen no válido. Usa JPG, PNG, SVG o WebP (máx. 10 MB).
+            </small>
+          )}
+        </label>
+
+        <div className="actions">
+          <Button type="submit" variant="primary">Guardar producto</Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/admin/productos')}>Cancelar</Button>
+        </div>
+      </form>
     </div>
   );
 };
 
-export default AdminProductosPage;
-
+export default NuevoProductoPage;
