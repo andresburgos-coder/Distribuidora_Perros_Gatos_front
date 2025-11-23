@@ -11,8 +11,10 @@ const apiClient = axios.create({
 // Request interceptor - Agregar token si existe
 apiClient.interceptors.request.use(
   (config) => {
-    // El token se maneja mediante cookies HTTP-only según la arquitectura
-    // No necesitamos agregar Authorization header manualmente
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
