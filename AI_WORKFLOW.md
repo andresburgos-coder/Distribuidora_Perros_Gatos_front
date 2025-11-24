@@ -149,7 +149,7 @@ Si quieres que la IA cree algo "de 0" (componente, página, servicio, script), s
   - Pruebas ejecutadas y resultados (comandos y salida).
   - Señalización: "(asistido por IA)".
 
-- Checklist mínimo antes de merge
+- Checklist mínimo antes de merge 
   - [ ] Código compila y la app corre localmente.
   - [ ] Tests unitarios pasan (o se añadieron con cobertura razonable).
   - [ ] Al menos una revisión de compañero aprobó la lógica.
