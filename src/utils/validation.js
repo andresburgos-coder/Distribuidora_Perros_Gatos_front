@@ -68,7 +68,12 @@ export const formatPrice = (price) => {
 };
 
 export const formatDate = (dateString) => {
+  if (!dateString) return '';
+
   const date = new Date(dateString);
+  // si la fecha es inválida, devolver cadena vacía para evitar RangeError
+  if (Number.isNaN(date.getTime())) return '';
+
   return new Intl.DateTimeFormat('es-CL', {
     year: 'numeric',
     month: '2-digit',
