@@ -38,11 +38,11 @@ export const useAuth = () => {
         return { success: false, error: message };
       }
     } catch (error) {
-        const message = error.response?.data?.message || 'Correo o contraseña incorrectos.';
-        if (!error?._toastsShown) toast.error(message);
-        return { success: false, error: message };
-      }
-    };
+      const message = error.response?.data?.message || 'Correo o contraseña incorrectos.';
+      if (!error?._toastsShown) toast.error(message);
+      return { success: false, error: message };
+    }
+  }
   
     const logout = async () => {
       try {

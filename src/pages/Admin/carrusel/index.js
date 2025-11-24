@@ -16,10 +16,8 @@ const AdminCarruselPage = () => {
   const [createdBy, setCreatedBy] = useState('');
   const { showToast } = useToast();
 
-  useEffect(() => {
-    fetchCarousel();
-  }, []);
 
+  // Declarar fetchCarousel antes del useEffect
   const fetchCarousel = async () => {
     setLoading(true);
     try {
@@ -31,6 +29,10 @@ const AdminCarruselPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCarousel();
+  }, []);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -177,5 +179,3 @@ const AdminCarruselPage = () => {
 };
 
 export default AdminCarruselPage;
-
-

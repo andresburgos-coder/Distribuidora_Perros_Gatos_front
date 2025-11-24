@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import productosService from "../../../../services/productos-service";
+import categoriasService from "../../../../services/categorias-service";
 import { useToast } from "../../../../hooks/use-toast";
 import '../style.css';
 
-const categorias = {
-  Perros: ["Alimento", "Juguetes", "Accesorios", "Higiene"],
-  Gatos: ["Alimento", "Rascadores", "Arena", "Accesorios"],
-};
+// Las categorías y subcategorías se cargarán desde la API
 
 const MAX_IMAGE_SIZE = 10485760; // 10 MB
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/svg+xml", "image/webp"];
@@ -18,10 +16,25 @@ const NuevoProductoPage = () => {
     descripcion: "",
     precio: "",
     peso: "",
-    categoria: "Perros",
-    subcategoria: "Alimento",
+    categoria: "",
+    subcategoria: "",
     imagenFile: null,
   });
+  const [categorias, setCategorias] = useState([]); // [{ id, nombre, subcategorias: [{ id, nombre }] }]
+    // Cargar categorías reales al montar
+    useEffect(() => {
+      categoriasService.getAll().then((data) => {
+        setCategorias(data || []);
+        // Si hay categorías, setear la primera como seleccionada por defecto
+        if (data && data.length > 0) {
+          setForm((prev) => ({
+            ...prev,
+            categoria: data[0].id,
+            subcategoria: data[0].subcategorias && data[0].subcategorias.length > 0 ? data[0].subcategorias[0].id : ""
+          }));
+        }
+      });
+    }, []);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const { showToast } = useToast();
@@ -31,6 +44,14 @@ const NuevoProductoPage = () => {
     const { name, value, files } = e.target;
     if (name === "imagenFile") {
       setForm((prev) => ({ ...prev, imagenFile: files[0] }));
+    } else if (name === "categoria") {
+      // Al cambiar la categoría, setear la primera subcategoría disponible
+      const cat = categorias.find((c) => String(c.id) === String(value));
+      setForm((prev) => ({
+        ...prev,
+        categoria: value,
+        subcategoria: cat && cat.subcategorias && cat.subcategorias.length > 0 ? cat.subcategorias[0].id : ""
+      }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -43,8 +64,9 @@ const NuevoProductoPage = () => {
     if (!form.descripcion || form.descripcion.length < 10) newErrors.descripcion = "Mínimo 10 caracteres";
     if (!form.precio || isNaN(form.precio) || Number(form.precio) <= 0) newErrors.precio = "Precio debe ser > 0";
     if (!form.peso || isNaN(form.peso) || !Number.isInteger(Number(form.peso)) || Number(form.peso) < 1) newErrors.peso = "Peso debe ser entero ≥ 1";
-    if (!form.categoria || !categorias[form.categoria]) newErrors.categoria = "Selecciona categoría";
-    if (!form.subcategoria || !categorias[form.categoria].includes(form.subcategoria)) newErrors.subcategoria = "Selecciona subcategoría";
+    if (!form.categoria || !categorias.find((c) => String(c.id) === String(form.categoria))) newErrors.categoria = "Selecciona categoría";
+    const cat = categorias.find((c) => String(c.id) === String(form.categoria));
+    if (!form.subcategoria || !(cat && cat.subcategorias && cat.subcategorias.find((s) => String(s.id) === String(form.subcategoria)))) newErrors.subcategoria = "Selecciona subcategoría";
     if (!form.imagenFile) newErrors.imagenFile = "Imagen requerida";
     else {
       if (!ALLOWED_IMAGE_TYPES.includes(form.imagenFile.type) || form.imagenFile.size > MAX_IMAGE_SIZE) {
@@ -124,8 +146,8 @@ const NuevoProductoPage = () => {
           <div>
             <label>Categoría</label>
             <select name="categoria" value={form.categoria} onChange={handleChange} required>
-              {Object.keys(categorias).map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
               ))}
             </select>
             {errors.categoria && <span className="error-text">{errors.categoria}</span>}
@@ -134,8 +156,8 @@ const NuevoProductoPage = () => {
           <div>
             <label>Subcategoría</label>
             <select name="subcategoria" value={form.subcategoria} onChange={handleChange} required>
-              {categorias[form.categoria].map((sub) => (
-                <option key={sub} value={sub}>{sub}</option>
+              {(categorias.find((c) => String(c.id) === String(form.categoria))?.subcategorias || []).map((sub) => (
+                <option key={sub.id} value={sub.id}>{sub.nombre}</option>
               ))}
             </select>
             {errors.subcategoria && <span className="error-text">{errors.subcategoria}</span>}
