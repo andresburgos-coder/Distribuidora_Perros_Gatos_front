@@ -6,12 +6,12 @@ import { formatPrice, formatDate } from '../../../utils/validation';
 import { toast } from '../../../utils/toast';
 import './style.css';
 
-const ORDER_STATUSES = ['Pendiente de envío', 'Enviado', 'Entregado', 'Cancelado'];
+const ORDER_STATUSES = ['Pendiente', 'Enviado', 'Entregado', 'Cancelado'];
 const FILTER_OPTIONS = ['Todos', ...ORDER_STATUSES];
 
 const getValidTransitions = (currentStatus) => {
   const transitions = {
-    'Pendiente de envío': ['Enviado', 'Cancelado'],
+    'Pendiente': ['Enviado', 'Cancelado'],
     'Enviado': ['Entregado', 'Cancelado'],
     'Entregado': [],
     'Cancelado': [],
@@ -128,8 +128,8 @@ export const AdminPedidosPage = () => {
                 return (
                   <tr key={order.id}>
                     <td>{order.id}</td>
-                    <td>{order.clienteNombre}</td>
-                    <td>{formatDate(order.fecha)}</td>
+                    <td>{order.usuario_id}</td>
+                    <td>{formatDate(order.fecha_creacion)}</td>
                     <td>{formatPrice(order.total)}</td>
                     <td>
                       <OrderStatusBadge status={order.estado} />
@@ -183,43 +183,41 @@ export const AdminPedidosPage = () => {
           <div className="order-details">
             <div className="order-detail-section">
               <h3>Cliente</h3>
-              <p><strong>Nombre:</strong> {selectedOrder.clienteNombre}</p>
-              <p><strong>ID:</strong> {selectedOrder.clienteId}</p>
+              <p><strong>ID:</strong> {selectedOrder.usuario_id}</p>
             </div>
-            
             <div className="order-detail-section">
               <h3>Envío</h3>
-              <p>{selectedOrder.direccionEnvio}</p>
+              <p>{selectedOrder.direccion_entrega}</p>
+              <p><strong>Teléfono:</strong> {selectedOrder.telefono_contacto}</p>
+              {selectedOrder.nota_especial && <p><strong>Nota:</strong> {selectedOrder.nota_especial}</p>}
             </div>
-
             <div className="order-detail-section">
               <h3>Productos</h3>
               <table className="products-table">
                 <thead>
                   <tr>
-                    <th>Producto</th>
+                    <th>ID Producto</th>
                     <th>Cantidad</th>
                     <th>Precio Unitario</th>
                     <th>Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedOrder.productos?.map((product, index) => (
+                  {selectedOrder.items?.map((item, index) => (
                     <tr key={index}>
-                      <td>{product.nombre}</td>
-                      <td>{product.cantidad}</td>
-                      <td>{formatPrice(product.precioUnitario)}</td>
-                      <td>{formatPrice(product.precioUnitario * product.cantidad)}</td>
+                      <td>{item.producto_id}</td>
+                      <td>{item.cantidad}</td>
+                      <td>{formatPrice(item.precio_unitario)}</td>
+                      <td>{formatPrice(item.precio_unitario * item.cantidad)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
             <div className="order-detail-section">
               <p><strong>Total:</strong> {formatPrice(selectedOrder.total)}</p>
               <p><strong>Estado:</strong> <OrderStatusBadge status={selectedOrder.estado} /></p>
-              <p><strong>Fecha:</strong> {formatDate(selectedOrder.fecha)}</p>
+              <p><strong>Fecha:</strong> {formatDate(selectedOrder.fecha_creacion)}</p>
             </div>
           </div>
         </Modal>

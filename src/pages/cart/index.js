@@ -63,13 +63,15 @@ export const CartPage = () => {
     setIsProcessing(true);
     try {
       const orderData = {
-        productos: cart.map(item => ({
-          sku: item.id,
-          nombre: item.nombre,
+        direccion_entrega: user.direccion_envio || user.direccionEnvio || '',
+        telefono_contacto: user.telefono || '',
+        nota_especial: '',
+        usuario_id: user.id,
+        items: cart.map(item => ({
+          producto_id: item.id,
           cantidad: item.quantity ?? item.cantidad ?? 1,
-          precioUnitario: item.precio,
+          precio_unitario: item.precio,
         })),
-        direccionEnvio: user.direccionEnvio,
       };
 
       await pedidosService.createOrder(orderData);

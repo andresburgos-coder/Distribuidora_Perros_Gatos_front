@@ -81,14 +81,3 @@ Notas:
 
 - Si alguna parte del código existente (hashing, autenticación, modelos) tiene funciones o módulos reutilizables, menciona dónde integrarlos (ej. `Distribuidora_Perros_Gatos_back/backend/api/main.py` o el módulo de autenticación actual).
 - Prioriza compatibilidad con la estructura actual del repo y con patrones ya usados (p. ej. respuesta JSON, manejo de errores).
-
-```
-
------
-
-Si quieres, puedo:
-
-- Generar los snippets concretos (SQL, FastAPI, worker Node.js, React components y servicios) listos para pegar en los archivos sugeridos.
-- O bien crear automáticamente los archivos base en el repo (dime si quieres eso ahora).
-
-Indica si prefieres que genere el código completo para integrar directamente en el proyecto o si solo quieres el prompt pulido (como está ahora).
